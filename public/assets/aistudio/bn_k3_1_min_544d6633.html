@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/security.js"></script>
+  <script src="js/guard.js?v=2.2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BN LAST KING · K3 AI ENGINE (RED EDITION)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg-core: #0a0204; --bg-card: rgba(26, 8, 12, 0.75); --bg-card-solid: #1a080c; --border-cyber: rgba(239, 68, 68, 0.35); --border-glow: rgba(239, 68, 68, 0.7); --accent-red: #ef4444; --accent-bright-red: #ff1f3d; --accent-crimson: #dc2626; --accent-gold: #f5b342; --accent-cyan: #00f2fe; --accent-green: #10b981; --text-main: #f3f4f6; --text-muted: #9ca3af; --font-display: 'Orbitron', sans-serif; --font-sans: 'Plus Jakarta Sans', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg-core); background-image: radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.12) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(220, 38, 38, 0.08) 0%, transparent 40%); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+    .app { max-width: 420px; width: 100%; background: var(--bg-core); box-shadow: 0 0 50px rgba(239, 68, 68, 0.25), inset 0 0 1px 1px rgba(239, 68, 68, 0.1); position: relative; overflow-x: hidden; border-left: 1px solid rgba(239, 68, 68, 0.15); border-right: 1px solid rgba(239, 68, 68, 0.15); }
+    .header { background: linear-gradient(180deg, rgba(26, 8, 12, 0.95) 0%, rgba(10, 2, 4, 0.95) 100%); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-cyber); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .menu-btn { background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05)); border: 1px solid var(--border-cyber); color: var(--accent-red); border-radius: 12px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.2s ease; }
+    .menu-btn:active { transform: scale(0.92); }
+    .logo { display: flex; flex-direction: column; }
+    .logo-top { display: flex; align-items: center; gap: 6px; }
+    .logo-star { color: var(--accent-red); font-size: 14px; text-shadow: 0 0 10px var(--accent-red); }
+    .logo-text { font-family: var(--font-display); font-weight: 900; font-size: 15px; letter-spacing: 1px; background: linear-gradient(90deg, #fff, var(--accent-bright-red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-sub { font-size: 9px; color: var(--accent-red); letter-spacing: 2px; font-weight: 700; text-transform: uppercase; }
+    .logo-badge { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: var(--accent-bright-red); border-radius: 30px; padding: 3px 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px; box-shadow: 0 0 15px rgba(239, 68, 68, 0.25); }
+    .logo-badge::before { content: ''; width: 5px; height: 5px; background: var(--accent-bright-red); border-radius: 50%; box-shadow: 0 0 8px var(--accent-bright-red); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+
+    .overlay { position: fixed; inset: 0; background: rgba(10, 2, 4, 0.85); backdrop-filter: blur(8px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s ease; }
+    .overlay.active { display: block; opacity: 1; }
+    .side-menu { position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background: #140407; z-index: 1000; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px 16px; overflow-y: auto; border-right: 1px solid var(--border-cyber); box-shadow: 10px 0 40px rgba(0, 0, 0, 0.9); }
+    .side-menu.open { left: 0; }
+    .side-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--accent-bright-red); padding-bottom: 14px; border-bottom: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 16px; }
+    .side-header .close { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #fff; width: 32px; height: 32px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .stat-card { background: var(--bg-card); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 14px; padding: 12px 10px; text-align: center; backdrop-filter: blur(10px); }
+    .stat-card .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .stat-card .value { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-top: 4px; }
+    .stat-card .value.win { color: var(--accent-green); text-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+    .stat-card .value.loss { color: var(--accent-bright-red); text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    .stat-card .value.acc { color: var(--accent-bright-red); text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+    .stat-card .value.total { color: var(--accent-gold); }
+    .streak-block { background: var(--bg-card); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 14px; }
+    .streak-block .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .streak-block .value { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-top: 4px; }
+    .streak-block .value.win-streak { color: var(--accent-green); }
+    .streak-block .value.loss-streak { color: var(--accent-bright-red); }
+    .streak-block .value.neutral { color: var(--accent-gold); }
+    .ratio-wrap { background: var(--bg-card); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+    .ratio-wrap .label { font-size: 10px; color: var(--text-muted); text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ratio-track { width: 100%; height: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 30px; overflow: hidden; display: flex; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .ratio-track .win { background: var(--accent-green); height: 100%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--accent-green); }
+    .ratio-track .loss { background: var(--accent-bright-red); height: 100%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--accent-bright-red); }
+    .ratio-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 6px; font-weight: 600; }
+    .pred-list h4 { color: var(--accent-bright-red); font-family: var(--font-display); font-size: 12px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding-bottom: 8px; margin-bottom: 10px; }
+    .pred-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 11px; }
+    .pred-item .period { color: var(--text-muted); font-family: monospace; }
+    .pred-item .pred { font-weight: 700; color: var(--accent-bright-red); }
+    .badge { padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .badge.win { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge.loss { background: rgba(239, 68, 68, 0.2); color: var(--accent-bright-red); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge.pending { background: rgba(245, 179, 66, 0.2); color: var(--accent-gold); border: 1px solid rgba(245, 179, 66, 0.3); }
+
+    .main-container { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .top-card { background: linear-gradient(135deg, #1a080c 0%, #0d0406 100%); border: 1px solid var(--border-cyber); border-radius: 20px; padding: 16px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(239, 68, 68, 0.15), inset 0 0 20px rgba(239, 68, 68, 0.05); }
+    .top-card::after { content: ''; position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%); pointer-events: none; }
+    .top-left { display: flex; flex-direction: column; gap: 6px; }
+    .tag { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 30px; padding: 2px 10px; font-size: 9px; font-weight: 700; color: var(--accent-bright-red); letter-spacing: 0.5px; width: fit-content; }
+    .game { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff; }
+    .dice-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+    .dice-box { background: #fff; color: #0a0204; font-family: var(--font-display); font-weight: 900; font-size: 14px; width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .dice-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-left: 2px; }
+    .top-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+    .timer-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .timer-digits { display: flex; gap: 3px; margin: 4px 0 2px; }
+    .timer-digit { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 16px; width: 24px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+    .timer-colon { color: var(--accent-bright-red); font-weight: 700; font-size: 16px; display: flex; align-items: center; }
+    .issue-upcoming { font-size: 10px; color: var(--text-muted); font-family: monospace; }
+    .prediction-box { background: linear-gradient(135deg, rgba(26, 8, 12, 0.9), rgba(12, 2, 4, 0.95)); border: 1px solid var(--border-cyber); padding: 16px; border-radius: 20px; box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: space-between; position: relative; }
+    .pred-left { display: flex; flex-direction: column; gap: 6px; }
+    .pred-label { font-size: 11px; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .pred-label span { color: #fff; font-family: monospace; }
+    .pred-meta-row { display: flex; gap: 6px; align-items: center; }
+    .logic-tag { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ffb4b4; border-radius: 30px; padding: 2px 10px; font-size: 9px; font-weight: 700; }
+    .status-tag { font-size: 9px; font-weight: 700; padding: 2px 10px; border-radius: 30px; text-transform: uppercase; }
+    .status-tag.waiting { background: rgba(156, 163, 175, 0.2); color: var(--text-muted); }
+    .status-tag.predicting { background: rgba(239, 68, 68, 0.2); color: var(--accent-bright-red); border: 1px solid rgba(239, 68, 68, 0.4); }
+    .status-tag.verified { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .pred-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .pred-value { font-family: var(--font-display); font-size: 20px; font-weight: 900; padding: 6px 20px; border-radius: 30px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .pred-value.big { background: linear-gradient(135deg, #ff1f3d, #dc2626); color: #ffffff; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
+    .pred-value.small { background: linear-gradient(135deg, #7f1d1d, #450a0a); color: #ff8080; border: 1px solid rgba(239, 68, 68, 0.5); box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+    .pred-value.waiting { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
+    .pred-result { font-size: 11px; font-weight: 700; }
+    .pred-result.win { color: var(--accent-green); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+    .pred-result.loss { color: var(--accent-bright-red); text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    .filters { display: flex; gap: 6px; }
+    .filter-btn { flex: 1; padding: 10px 0; border-radius: 12px; text-align: center; font-weight: 700; font-size: 12px; color: #fff; opacity: 0.4; transition: all 0.2s; cursor: pointer; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .filter-btn.active { opacity: 1; box-shadow: 0 0 15px currentColor; }
+    .filter-btn.green { background: var(--accent-green); color: #0a0204; }
+    .filter-btn.violet { background: #881337; }
+    .filter-btn.red { background: var(--accent-bright-red); }
+    .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .num-btn { aspect-ratio: 1/1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: white; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: transform 0.1s; }
+    .num-btn:active { transform: scale(0.9); }
+    .num-btn.purple { background: rgba(136, 19, 55, 0.3); color: #fecdd3; border-color: rgba(239, 68, 68, 0.3); }
+    .num-btn.green { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border-color: rgba(16, 185, 129, 0.4); }
+    .num-btn.red { background: rgba(239, 68, 68, 0.25); color: var(--accent-bright-red); border-color: rgba(239, 68, 68, 0.5); }
+
+    .controls { display: flex; gap: 6px; align-items: center; }
+    .btn-random { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--border-cyber); color: var(--accent-bright-red); border-radius: 12px; padding: 10px 16px; font-weight: 700; font-size: 11px; cursor: pointer; }
+    .multipliers { display: flex; flex: 1; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .multipliers::-webkit-scrollbar { display: none; }
+    .multi-btn { flex: 1; background: var(--bg-card); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 10px 0; font-size: 10px; font-weight: 700; color: var(--text-muted); text-align: center; cursor: pointer; min-width: 32px; }
+    .multi-btn.active { background: var(--accent-bright-red); border-color: var(--accent-bright-red); color: #ffffff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+    .big-small-row { display: flex; gap: 8px; border-radius: 16px; }
+    .bs-btn { flex: 1; padding: 12px 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 13px; border-radius: 14px; cursor: pointer; transition: all 0.2s; }
+    .bs-btn.big { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: var(--accent-bright-red); }
+    .bs-btn.small { background: rgba(127, 29, 29, 0.25); border: 1px solid rgba(127, 29, 29, 0.5); color: #fca5a5; }
+    .bs-btn.active { filter: brightness(1.3); box-shadow: 0 0 20px currentColor; }
+    .tabs { display: flex; gap: 6px; background: var(--bg-card); padding: 4px; border-radius: 14px; border: 1px solid rgba(239, 68, 68, 0.15); }
+    .tab-btn { flex: 1; padding: 10px 0; border-radius: 10px; text-align: center; font-weight: 700; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+    .tab-btn.active { background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(239, 68, 68, 0.05)); color: var(--accent-bright-red); border: 1px solid var(--border-cyber); }
+    .tab-content { margin-top: 4px; }
+    .history-wrap { border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; overflow: hidden; background: var(--bg-card); backdrop-filter: blur(10px); }
+    .history-wrap table { width: 100%; border-collapse: collapse; }
+    .history-wrap th { background: rgba(10, 2, 4, 0.9); color: var(--accent-bright-red); font-family: var(--font-display); font-weight: 700; font-size: 10px; padding: 10px 6px; text-align: center; border-bottom: 1px solid rgba(239, 68, 68, 0.2); }
+    .history-wrap td { padding: 10px 6px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 11px; color: var(--text-main); }
+    .dice-history { display: flex; gap: 3px; justify-content: center; }
+    .dice-history span { background: rgba(239, 68, 68, 0.15); padding: 2px 6px; border-radius: 4px; font-family: var(--font-display); font-weight: 700; font-size: 10px; color: #fff; }
+    .logic-grid { display: flex; flex-direction: column; gap: 10px; }
+    .logic-card { background: var(--bg-card); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; }
+    .logic-card.active { border-color: var(--accent-bright-red); background: linear-gradient(135deg, rgba(26, 8, 12, 0.9), rgba(239, 68, 68, 0.1)); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+    .logic-icon { font-size: 24px; }
+    .logic-info { flex: 1; }
+    .logic-info h4 { font-family: var(--font-display); font-size: 13px; color: #fff; }
+    .logic-info p { font-size: 10px; color: var(--text-muted); margin: 2px 0 6px; }
+    .logic-stats { display: flex; gap: 14px; font-size: 10px; }
+    .logic-stats .stat .val { font-weight: 700; font-family: var(--font-display); }
+    .logic-stats .stat .val.win { color: var(--accent-green); }
+    .logic-stats .stat .val.acc { color: var(--accent-bright-red); }
+    .logic-stats .stat .lbl { color: var(--text-muted); font-size: 8px; text-transform: uppercase; }
+    .logic-check { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logic-card.active .logic-check { background: var(--accent-bright-red); border-color: var(--accent-bright-red); color: #fff; box-shadow: 0 0 10px var(--accent-bright-red); }
+    .logic-card.active .logic-check::after { content: '✓'; font-weight: 900; font-size: 12px; }
+    .footnote { text-align: center; font-size: 9px; color: var(--text-muted); border-top: 1px solid rgba(239, 68, 68, 0.15); padding-top: 12px; margin-top: 6px; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+
+<!-- overlay + side menu drawer -->
+<div class="overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+  <div class="side-header">
+    <span>⚡ ENGINE ANALYTICS</span>
+    <button class="close" id="closeMenu">✕</button>
+  </div>
+  <div style="margin-bottom: 14px;">
+    <button onclick="window.location.href = (localStorage.getItem('bn_plan') === 'ELITE') ? 'ehome.html' : 'home.html';" style="width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--border-cyber); border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      <span>🏠</span> RETURN TO DASHBOARD
+    </button>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="label">🏆 Wins</div><div class="value win" id="sideWins">0</div></div>
+    <div class="stat-card"><div class="label">💀 Losses</div><div class="value loss" id="sideLosses">0</div></div>
+    <div class="stat-card"><div class="label">🎯 Accuracy</div><div class="value acc" id="sideAccuracy">0%</div></div>
+    <div class="stat-card"><div class="label">📊 Total</div><div class="value total" id="sideTotal">0</div></div>
+  </div>
+  <div class="streak-block">
+    <div class="label">🔥 Current Streak</div>
+    <div class="value" id="sideStreak">0</div>
+  </div>
+  <div class="ratio-wrap">
+    <div class="label">Win / Loss Ratio Spectrum</div>
+    <div class="ratio-track">
+      <div class="win" id="winRatio" style="width:50%"></div>
+      <div class="loss" id="lossRatio" style="width:50%"></div>
+    </div>
+    <div class="ratio-labels"><span id="winPct">0% Wins</span><span id="lossPct">0% Losses</span></div>
+  </div>
+  <div class="pred-list">
+    <h4>📋 Live Activity Logs <span id="resultCount" style="color:var(--accent-bright-red);">0</span></h4>
+    <div id="sidePredList"><div style="color:var(--text-muted);font-size:11px;text-align:center;padding:12px;">Awaiting telemetry…</div></div>
+  </div>
+</div>
+
+<!-- MAIN APP INTERFACE -->
+<div class="app">
+  
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div class="logo" onclick="window.location.href = (localStorage.getItem('bn_plan') === 'ELITE') ? 'ehome.html' : 'home.html';" style="cursor:pointer;" title="Return to Dashboard">
+        <div class="logo-top">
+          <span class="logo-star">✦</span>
+          <span class="logo-text">BN LAST KING</span>
+        </div>
+        <span class="logo-sub">RED AI ENGINE</span>
+      </div>
+    </div>
+    <div class="logo-badge" id="logoBadge">LIVE</div>
+  </div>
+
+  <div class="main-container">
+    
+    <!-- Top Card Status -->
+    <div class="top-card">
+      <div class="top-left">
+        <div class="tag">RED CYBER EDITION</div>
+        <div class="game">K3 1 MINUTE</div>
+        <div class="dice-row" id="lastDiceRow"></div>
+      </div>
+      <div class="top-right">
+        <div class="timer-label">Sync Interval</div>
+        <div class="timer-digits" id="timerDigits">
+          <div class="timer-digit">0</div>
+          <div class="timer-digit">0</div>
+          <span class="timer-colon">:</span>
+          <div class="timer-digit">0</div>
+          <div class="timer-digit">0</div>
+        </div>
+        <div class="issue-upcoming" id="upcomingIssue">Next: --</div>
+      </div>
+    </div>
+
+    <!-- Prediction Box -->
+    <div class="prediction-box">
+      <div class="pred-left">
+        <div class="pred-label">PERIOD <span id="predPeriod">---</span></div>
+        <div class="pred-meta-row">
+          <span class="logic-tag" id="logicTag">Crimson Matrix X</span>
+          <span class="status-tag waiting" id="statusTag">Waiting</span>
+        </div>
+      </div>
+      <div class="pred-right">
+        <div class="pred-value waiting" id="predValue">--</div>
+        <div class="pred-result" id="predResult"></div>
+      </div>
+    </div>
+
+    <!-- Color Filters -->
+    <div class="filters">
+      <div class="filter-btn green active" data-filter="green">Green</div>
+      <div class="filter-btn violet" data-filter="violet">Violet</div>
+      <div class="filter-btn red" data-filter="red">Red</div>
+    </div>
+
+    <!-- Numpad Grid -->
+    <div class="numpad">
+      <div class="num-btn purple" data-num="0">0</div>
+      <div class="num-btn green" data-num="1">1</div>
+      <div class="num-btn red" data-num="2">2</div>
+      <div class="num-btn green" data-num="3">3</div>
+      <div class="num-btn red" data-num="4">4</div>
+      <div class="num-btn purple" data-num="5">5</div>
+      <div class="num-btn red" data-num="6">6</div>
+      <div class="num-btn green" data-num="7">7</div>
+      <div class="num-btn red" data-num="8">8</div>
+      <div class="num-btn green" data-num="9">9</div>
+    </div>
+
+    <!-- Controls & Multipliers -->
+    <div class="controls">
+      <div class="btn-random" id="randomBtn">Random</div>
+      <div class="multipliers">
+        <div class="multi-btn active" data-mult="1">X1</div>
+        <div class="multi-btn" data-mult="5">X5</div>
+        <div class="multi-btn" data-mult="10">X10</div>
+        <div class="multi-btn" data-mult="20">X20</div>
+        <div class="multi-btn" data-mult="50">X50</div>
+      </div>
+    </div>
+
+    <!-- Big / Small Action Row -->
+    <div class="big-small-row">
+      <div class="bs-btn big active" data-bs="big">BIG</div>
+      <div class="bs-btn small" data-bs="small">SMALL</div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <div class="tab-btn active" data-tab="history">Game History</div>
+      <div class="tab-btn" data-tab="predictions">Audit Log</div>
+      <div class="tab-btn" data-tab="bypass">AI Engines</div>
+    </div>
+
+    <!-- Tab 1: Game History -->
+    <div id="tab-history" class="tab-content">
+      <div class="history-wrap">
+        <table>
+          <thead><tr><th>Period</th><th>Dice Sequence</th><th>Sum</th><th>B/S</th><th>O/E</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 2: Prediction Audit History -->
+    <div id="tab-predictions" class="tab-content" style="display:none;">
+      <div class="history-wrap">
+        <table>
+          <thead><tr><th>Period</th><th>Prediction</th><th>Actual</th><th>Status</th><th>Engine</th></tr></thead>
+          <tbody id="predHistoryBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">No audit logs recorded</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 3: Bypass AI Logic Engines -->
+    <div id="tab-bypass" class="tab-content" style="display:none;">
+      <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-bottom:10px;">Select neural bypass algorithm for live forecasting</div>
+      <div class="logic-grid" id="logicGrid">
+        <div class="logic-card active" data-logic="1">
+          <div class="logic-icon">⚡</div>
+          <div class="logic-info">
+            <h4>Crimson Matrix X</h4>
+            <p>Advanced harmonic wave oscillation & red neon momentum</p>
+            <div class="logic-stats"><div class="stat"><span class="val win" id="logic1-wins">0</span><span class="lbl">Wins</span></div><div class="stat"><span class="val acc" id="logic1-accuracy">0%</span><span class="lbl">Accuracy</span></div></div>
+          </div>
+          <div class="logic-check"></div>
+        </div>
+        <div class="logic-card" data-logic="2">
+          <div class="logic-icon">🔮</div>
+          <div class="logic-info">
+            <h4>Blood Bankai Core</h4>
+            <p>Non-linear momentum filter with volatility dampening</p>
+            <div class="logic-stats"><div class="stat"><span class="val win" id="logic2-wins">0</span><span class="lbl">Wins</span></div><div class="stat"><span class="val acc" id="logic2-accuracy">0%</span><span class="lbl">Accuracy</span></div></div>
+          </div>
+          <div class="logic-check"></div>
+        </div>
+        <div class="logic-card" data-logic="3">
+          <div class="logic-icon">🛡️</div>
+          <div class="logic-info">
+            <h4>Titanium Red Omega</h4>
+            <p>Deep cyclical parity fusion with adaptive entropy weighting</p>
+            <div class="logic-stats"><div class="stat"><span class="val win" id="logic3-wins">0</span><span class="lbl">Wins</span></div><div class="stat"><span class="val acc" id="logic3-accuracy">0%</span><span class="lbl">Accuracy</span></div></div>
+          </div>
+          <div class="logic-check"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footnote">DEPLOYED & SECURED BY @BN_OWNER · K3 AI ENGINE v5.0 (RED)</div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const API_URL = 'https://draw.ar-lottery01.com/K3/K3_1M/GetHistoryIssuePage.json';
+    const DISPLAY = 10;
+
+    const LOGICS = {
+      1: {
+        name: 'Crimson Matrix X',
+        predict: function(history) {
+          if (!history || history.length < 5) return Math.random() > 0.5 ? 'Big' : 'Small';
+          let waveSum = 0;
+          const sample = history.slice(0, 12);
+          sample.forEach((item, idx) => {
+            const weight = Math.exp(-idx / 4);
+            const val = (item.sum >= 11 ? 1 : -1) * weight;
+            waveSum += val;
+          });
+          return waveSum >= 0 ? 'Big' : 'Small';
+        }
+      },
+      2: {
+        name: 'Blood Bankai Core',
+        predict: function(history) {
+          if (!history || history.length < 8) return Math.random() > 0.5 ? 'Big' : 'Small';
+          let bigPower = 0, smallPower = 0;
+          const recent = history.slice(0, 15);
+          for (let i = 0; i < recent.length - 1; i++) {
+            const current = recent[i].sum >= 11 ? 'Big' : 'Small';
+            const next = recent[i+1].sum >= 11 ? 'Big' : 'Small';
+            const factor = 15 - i;
+            if (current === next) {
+              if (current === 'Big') bigPower += factor * 1.3;
+              else smallPower += factor * 1.3;
+            } else {
+              if (current === 'Big') smallPower += factor * 0.9;
+              else bigPower += factor * 0.9;
+            }
+          }
+          return bigPower >= smallPower ? 'Big' : 'Small';
+        }
+      },
+      3: {
+        name: 'Titanium Red Omega',
+        predict: function(history) {
+          if (!history || history.length < 6) return Math.random() > 0.5 ? 'Big' : 'Small';
+          let parityScore = 0;
+          const slice = history.slice(0, 10);
+          slice.forEach((h, idx) => {
+            const mod = h.sum % 2;
+            const weight = 10 - idx;
+            if (mod === 0) parityScore += weight;
+            else parityScore -= weight;
+          });
+          const lastSum = slice[0].sum;
+          if (parityScore > 3) {
+            return lastSum >= 11 ? 'Small' : 'Big';
+          } else {
+            return lastSum >= 11 ? 'Big' : 'Small';
+          }
+        }
+      }
+    };
+
+    let serverOffset = 0;
+    let processed = new Set();
+    let historyLog = [];
+    let upcomingIssue = '---';
+    let timerInterval = null;
+
+    let activeLogic = 1;
+    let stats = { wins: 0, losses: 0, streak: 0 };
+    let predictionHistory = [];
+    let logicStats = { 1: { wins: 0, losses: 0 }, 2: { wins: 0, losses: 0 }, 3: { wins: 0, losses: 0 } };
+
+    let currentPeriod = null;
+    let currentPrediction = null;
+    let status = 'waiting';
+
+    const $ = id => document.getElementById(id);
+    const lastDiceRow = $('lastDiceRow');
+    const timerDigits = $('timerDigits').querySelectorAll('.timer-digit');
+    const upcomingEl = $('upcomingIssue');
+    const historyBody = $('historyBody');
+    const predPeriod = $('predPeriod');
+    const predValue = $('predValue');
+    const predResult = $('predResult');
+    const logoBadge = $('logoBadge');
+    const statusTag = $('statusTag');
+    const logicTag = $('logicTag');
+    const predHistoryBody = $('predHistoryBody');
+    const sideWins = $('sideWins');
+    const sideLosses = $('sideLosses');
+    const sideAccuracy = $('sideAccuracy');
+    const sideTotal = $('sideTotal');
+    const sideStreak = $('sideStreak');
+    const winRatio = $('winRatio');
+    const lossRatio = $('lossRatio');
+    const winPct = $('winPct');
+    const lossPct = $('lossPct');
+    const sidePredList = $('sidePredList');
+    const resultCount = $('resultCount');
+
+    function getBS(sum) { return sum >= 11 ? 'Big' : 'Small'; }
+    function getOE(sum) { return sum % 2 === 0 ? 'Even' : 'Odd'; }
+    function nextIssue(issue) {
+      if (!issue || issue.length < 8) return '------';
+      const prefix = issue.slice(0, -4);
+      const suffix = parseInt(issue.slice(-4), 10) + 1;
+      return prefix + String(suffix).padStart(4, '0');
+    }
+    function setStatus(s) {
+      status = s;
+      statusTag.className = 'status-tag ' + s;
+      statusTag.textContent = s;
+    }
+    function parseDice(premium) {
+      if (typeof premium === 'string') return premium.split('').map(Number);
+      return [premium, premium, premium];
+    }
+
+    function processHistory(data) {
+      if (!data || !data.length) return;
+      data.sort((a,b) => b.issueNumber.localeCompare(a.issueNumber));
+      historyLog = data;
+      const latest = data[0];
+      const finishedPeriod = latest.issueNumber;
+      const finishedSum = latest.sum;
+      const finishedSize = getBS(finishedSum);
+
+      if (!currentPeriod) {
+        currentPeriod = nextIssue(finishedPeriod);
+        const hist = historyLog.map(h => ({ sum: h.sum }));
+        currentPrediction = LOGICS[activeLogic].predict(hist);
+        setStatus('predicting');
+        predictionHistory.unshift({ period: currentPeriod, prediction: currentPrediction, actual: undefined, status: 'Pending', logicId: activeLogic });
+        processed.add(finishedPeriod);
+        updateUI(latest);
+        return;
+      }
+
+      if (finishedPeriod === currentPeriod && !processed.has(finishedPeriod)) {
+        processed.add(finishedPeriod);
+        setStatus('result');
+        const win = (currentPrediction === finishedSize);
+        if (win) { stats.wins++; stats.streak = stats.streak >= 0 ? stats.streak + 1 : 1; logicStats[activeLogic].wins++; }
+        else { stats.losses++; stats.streak = stats.streak <= 0 ? stats.streak - 1 : -1; logicStats[activeLogic].losses++; }
+
+        const entry = predictionHistory.find(p => p.period === finishedPeriod);
+        if (entry) { entry.actual = finishedSum + ' (' + finishedSize + ')'; entry.status = win ? 'Win' : 'Loss'; }
+
+        predResult.textContent = win ? '✅ WIN' : '❌ LOSS';
+        predResult.className = 'pred-result ' + (win ? 'win' : 'loss');
+        logoBadge.textContent = win ? 'WIN' : 'LOSS';
+        logoBadge.style.background = win ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+        logoBadge.style.color = win ? 'var(--accent-green)' : 'var(--accent-bright-red)';
+        setStatus('verified');
+
+        currentPeriod = nextIssue(finishedPeriod);
+        const hist = historyLog.map(h => ({ sum: h.sum }));
+        currentPrediction = LOGICS[activeLogic].predict(hist);
+        predictionHistory.unshift({ period: currentPeriod, prediction: currentPrediction, actual: undefined, status: 'Pending', logicId: activeLogic });
+
+        setTimeout(() => {
+          if (status === 'verified') {
+            predResult.textContent = '';
+            logoBadge.textContent = 'LIVE';
+            logoBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+            logoBadge.style.color = 'var(--accent-bright-red)';
+            setStatus('predicting');
+            updateUI(latest);
+          }
+        }, 4000);
+      } else if (!processed.has(finishedPeriod)) {
+        processed.add(finishedPeriod);
+        upcomingIssue = nextIssue(finishedPeriod);
+        if (currentPeriod && finishedPeriod > currentPeriod) {
+          currentPeriod = upcomingIssue;
+          const hist = historyLog.map(h => ({ sum: h.sum }));
+          currentPrediction = LOGICS[activeLogic].predict(hist);
+          setStatus('predicting');
+        }
+      }
+      updateUI(latest);
+    }
+
+    function updateUI(latest) {
+      if (latest) {
+        const dice = parseDice(latest.premium);
+        lastDiceRow.innerHTML = dice.map(d => `<div class="dice-box">${d}</div>`).join('') +
+          `<span class="dice-label">Sum ${latest.sum} · ${getBS(latest.sum)}</span>`;
+      }
+
+      upcomingEl.textContent = 'Next: ' + (currentPeriod ? currentPeriod.slice(-6) : '---');
+      predPeriod.textContent = currentPeriod ? currentPeriod.slice(-6) : '---';
+      logicTag.textContent = LOGICS[activeLogic].name;
+      if (status === 'waiting') {
+        predValue.textContent = '--';
+        predValue.className = 'pred-value waiting';
+      } else {
+        predValue.textContent = currentPrediction || '--';
+        predValue.className = 'pred-value ' + (currentPrediction ? currentPrediction.toLowerCase() : 'waiting');
+      }
+
+      historyBody.innerHTML = '';
+      historyLog.slice(0, DISPLAY).forEach(item => {
+        const dice = parseDice(item.premium);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.issueNumber.slice(-7)}</td>
+          <td><div class="dice-history">${dice.map(d => `<span>${d}</span>`).join('')}</div></td>
+          <td>${item.sum}</td>
+          <td style="font-weight:700;color:${item.sum>=11?'var(--accent-bright-red)':'var(--accent-cyan)'}">${getBS(item.sum)}</td>
+          <td>${getOE(item.sum)}</td>`;
+        historyBody.appendChild(tr);
+      });
+
+      predHistoryBody.innerHTML = '';
+      if (!predictionHistory.length) {
+        predHistoryBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">No audit logs recorded</td></tr>';
+      } else {
+        predictionHistory.slice(0, 20).forEach(item => {
+          const st = item.status || 'Pending';
+          const color = st === 'Win' ? 'var(--accent-green)' : (st === 'Loss' ? 'var(--accent-bright-red)' : 'var(--accent-gold)');
+          const label = st === 'Win' ? 'WIN' : (st === 'Loss' ? 'LOSS' : 'PENDING');
+          const row = `<tr><td>${item.period.slice(-6)}</td><td><strong>${item.prediction}</strong></td><td>${item.actual || '-'}</td><td style="color:${color};font-weight:700;">${label}</td><td style="font-size:10px;color:var(--text-muted);">${LOGICS[item.logicId].name}</td></tr>`;
+          predHistoryBody.insertAdjacentHTML('beforeend', row);
+        });
+      }
+
+      for (let i = 1; i <= 3; i++) {
+        const total = logicStats[i].wins + logicStats[i].losses;
+        const acc = total ? Math.round((logicStats[i].wins / total) * 100) : 0;
+        document.getElementById('logic' + i + '-wins').textContent = logicStats[i].wins;
+        document.getElementById('logic' + i + '-accuracy').textContent = acc + '%';
+      }
+
+      const total = stats.wins + stats.losses;
+      const acc = total ? ((stats.wins / total) * 100).toFixed(1) : 0;
+      sideWins.textContent = stats.wins;
+      sideLosses.textContent = stats.losses;
+      sideAccuracy.textContent = acc + '%';
+      sideTotal.textContent = total;
+      sideStreak.textContent = Math.abs(stats.streak);
+      sideStreak.className = 'value ' + (stats.streak > 0 ? 'win-streak' : (stats.streak < 0 ? 'loss-streak' : 'neutral'));
+
+      const wp = total ? (stats.wins / total) * 100 : 50;
+      const lp = total ? (stats.losses / total) * 100 : 50;
+      winRatio.style.width = wp + '%';
+      lossRatio.style.width = lp + '%';
+      winPct.textContent = wp.toFixed(1) + '% Wins';
+      lossPct.textContent = lp.toFixed(1) + '% Losses';
+      resultCount.textContent = predictionHistory.length;
+
+      sidePredList.innerHTML = predictionHistory.slice(0, 20).map(item => {
+        const st = item.status || 'Pending';
+        const cls = st === 'Win' ? 'win' : (st === 'Loss' ? 'loss' : 'pending');
+        const label = st === 'Win' ? 'WIN' : (st === 'Loss' ? 'LOSS' : 'PENDING');
+        return `<div class="pred-item"><span class="period">${item.period.slice(-6)}</span><span class="pred">${item.prediction}</span><span style="font-weight:600">${item.actual ? item.actual.split(' ')[0] : '-'}</span><span class="badge ${cls}">${label}</span></div>`;
+      }).join('');
+    }
+
+    async function fetchData() {
+      try {
+        const ts = Date.now();
+        const resp = await fetch(API_URL + '?ts=' + ts, {
+          headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://hgnice.biz' }
+        });
+        const json = await resp.json();
+        if (json.code !== 0) throw new Error(json.msg || 'API error');
+        const list = json?.data?.list || [];
+        const history = list.map(item => ({
+          issueNumber: String(item.issueNumber || item.issue || ''),
+          premium: item.premium || 0,
+          sum: item.sum || 0,
+          number: item.number || 0
+        })).filter(h => h.issueNumber);
+        if (history.length) processHistory(history);
+        else fallbackMock();
+      } catch (e) {
+        fallbackMock();
+      }
+    }
+
+    function fallbackMock() {
+      const base = Math.floor(Date.now() / 60000);
+      const mock = [];
+      for (let i = 0; i < 15; i++) {
+        const d1 = (base + i * 2) % 6 + 1;
+        const d2 = (base + i * 3) % 6 + 1;
+        const d3 = (base + i * 5) % 6 + 1;
+        const sum = d1 + d2 + d3;
+        mock.push({
+          issueNumber: String(2026090910000 + (base - i)),
+          premium: parseInt('' + d1 + d2 + d3),
+          sum: sum,
+          number: sum
+        });
+      }
+      processHistory(mock);
+    }
+
+    function tickTimer() {
+      const now = new Date(Date.now() + serverOffset);
+      let rem = 60 - now.getUTCSeconds();
+      if (rem === 60) rem = 0;
+      const m = Math.floor(rem / 60);
+      const s = rem % 60;
+      const digits = [Math.floor(m/10), m%10, Math.floor(s/10), s%10];
+      for (let i = 0; i < 4; i++) timerDigits[i].textContent = digits[i];
+      if (rem === 0 || rem === 59) setTimeout(fetchData, 1500);
+    }
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      tickTimer();
+      timerInterval = setInterval(tickTimer, 1000);
+    }
+
+    $('menuBtn').addEventListener('click', () => {
+      $('sideMenu').classList.add('open');
+      $('overlay').classList.add('active');
+    });
+    $('closeMenu').addEventListener('click', () => {
+      $('sideMenu').classList.remove('open');
+      $('overlay').classList.remove('active');
+    });
+    $('overlay').addEventListener('click', () => {
+      $('sideMenu').classList.remove('open');
+      $('overlay').classList.remove('active');
+    });
+
+    const tabs = { history: $('tab-history'), predictions: $('tab-predictions'), bypass: $('tab-bypass') };
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const key = this.dataset.tab;
+        Object.keys(tabs).forEach(k => tabs[k].style.display = k === key ? 'block' : 'none');
+      });
+    });
+
+    document.querySelectorAll('.logic-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.logic-card').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        activeLogic = parseInt(this.dataset.logic, 10);
+        if (historyLog.length && status === 'predicting') {
+          const hist = historyLog.map(h => ({ sum: h.sum }));
+          currentPrediction = LOGICS[activeLogic].predict(hist);
+          const entry = predictionHistory.find(p => p.period === currentPeriod && p.status === 'Pending');
+          if (entry) { entry.prediction = currentPrediction; entry.logicId = activeLogic; }
+        }
+        updateUI(historyLog.length ? historyLog[0] : null);
+      });
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(f => f.classList.remove('active'));
+      this.classList.add('active');
+    }));
+
+    document.querySelectorAll('.num-btn').forEach(b => b.addEventListener('click', function() {
+      document.querySelectorAll('.num-btn').forEach(n => n.style.borderColor = 'rgba(239,68,68,0.2)');
+      this.style.borderColor = 'var(--accent-bright-red)';
+    }));
+
+    $('randomBtn').addEventListener('click', function() {
+      const n = Math.floor(Math.random() * 10);
+      document.querySelectorAll('.num-btn').forEach(b => b.style.borderColor = 'rgba(239,68,68,0.2)');
+      const target = document.querySelector(`.num-btn[data-num="${n}"]`);
+      if (target) target.style.borderColor = 'var(--accent-bright-red)';
+    });
+
+    document.querySelectorAll('.multi-btn').forEach(b => b.addEventListener('click', function() {
+      document.querySelectorAll('.multi-btn').forEach(m => m.classList.remove('active'));
+      this.classList.add('active');
+    }));
+
+    document.querySelectorAll('.bs-btn').forEach(b => b.addEventListener('click', function() {
+      document.querySelectorAll('.bs-btn').forEach(bs => bs.classList.remove('active'));
+      this.classList.add('active');
+    }));
+
+    fetchData().then(startTimer);
+  })();
+</script>
+</body>
+</html>
